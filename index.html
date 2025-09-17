@@ -1,1 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погода в Усть-Илимске</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4b6cb7, #182848);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .last-update {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .weather-info {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .current-weather {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .temperature {
+            font-size: 4rem;
+            font-weight: 300;
+            margin: 15px 0;
+            color: #2c3e50;
+        }
+        
+        .weather-icon {
+            width: 120px;
+            height: 120px;
+            margin: 10px 0;
+        }
+        
+        .description {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+        }
+        
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .detail-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-card h3 {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #4b6cb7;
+        }
+        
+        .forecast {
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .forecast h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .forecast-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .forecast-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .forecast-day {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .forecast-temp {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #4b6cb7;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 600px) {
+            .details {
+                grid-template-columns: 1fr;
+            }
+            
+            .temperature {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Погода в Усть-Илимске</h1>
+            <p class="last-update">Обновлено: <span id="update-time">--:--:--</span></p>
+        </header>
+        
+        <div class="weather-info">
+            <div class="current-weather">
+                <div class="temperature" id="temperature">--°C</div>
+                <img class="weather-icon" id="weather-icon" src="" alt="Погода">
+                <div class="description" id="description">Загрузка...</div>
+                
+                <div class="details">
+                    <div class="detail-card">
+                        <h3>Ощущается как</h3>
+                        <div class="detail-value" id="feels-like">--°C</div>
+                    </div>
+                    <div class="detail-card">
+                        <h3>Влажность</h3>
+                        <div class="detail-value" id="humidity">--%</div>
+                    </div>
+                    <div class="detail-card">
+                        <h3>Ветер</h3>
+                        <div class="detail-value" id="wind">-- м/с</div>
+                    </div>
+                    <div class="detail-card">
+                        <h3>Давление</h3>
+                        <div class="detail-value" id="pressure">-- hPa</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="forecast">
+                <h2>Прогноз на 5 дней</h2>
+                <div class="forecast-cards" id="forecast-container">
+                    <!-- Прогноз будет добавлен через JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Данные о погоде обновляются каждые 15 минут</p>
+            <p>© 2023 Погода в Усть-Илимске</p>
+        </footer>
+    </div>
 
+    <script>
+        // Функция для обновления времени последнего обновления
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU');
+            document.getElementById('update-time').textContent = timeString;
+        }
+        
+        // Функция для получения иконки погоды
+        function getWeatherIcon(condition) {
+            const iconMap = {
+                'ясно': 'https://cdn-icons-png.flaticon.com/512/6974/6974833.png',
+                'облачно': 'https://cdn-icons-png.flaticon.com/512/414/414927.png',
+                'пасмурно': 'https://cdn-icons-png.flaticon.com/512/414/414825.png',
+                'дождь': 'https://cdn-icons-png.flaticon.com/512/3351/3351979.png',
+                'снег': 'https://cdn-icons-png.flaticon.com/512/642/642102.png',
+                'гроза': 'https://cdn-icons-png.flaticon.com/512/648/648508.png'
+            };
+            
+            return iconMap[condition.toLowerCase()] || 'https://cdn-icons-png.flaticon.com/512/984/984193.png';
+        }
+        
+        // Функция для получения данных о погоде (имитация API)
+        function fetchWeatherData() {
+            // В реальном приложении здесь был бы fetch к API погоды
+            return new Promise((resolve) => {
+                // Имитация задержки сети
+                setTimeout(() => {
+                    // Генерация случайных, но правдоподобных данных о погоде для Усть-Илимска
+                    const currentTemp = Math.round(Math.random() * 40 - 10); // от -10 до +30
+                    
+                    const conditions = ['ясно', 'облачно', 'пасмурно', 'дождь', 'снег', 'гроза'];
+                    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+                    
+                    const feelsLike = currentTemp - Math.round(Math.random() * 5);
+                    const humidity = Math.round(Math.random() * 40 + 50); // 50-90%
+                    const wind = (Math.random() * 10).toFixed(1); // 0-10 м/с
+                    const pressure = Math.round(Math.random() * 20 + 1000); // 1000-1020 hPa
+                    
+                    // Генерация прогноза на 5 дней
+                    const forecast = [];
+                    for (let i = 0; i < 5; i++) {
+                        forecast.push({
+                            day: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU', { weekday: 'short' }),
+                            temp: Math.round(currentTemp + (Math.random() * 6 - 3)),
+                            condition: conditions[Math.floor(Math.random() * 3)] // только ясно, облачно, пасмурно
+                        });
+                    }
+                    
+                    resolve({
+                        temperature: currentTemp,
+                        condition,
+                        feelsLike,
+                        humidity,
+                        wind,
+                        pressure,
+                        forecast
+                    });
+                }, 1000);
+            });
+        }
+        
+        // Функция для обновления интерфейса данными о погоде
+        function updateWeatherUI(data) {
+            document.getElementById('temperature').textContent = `${data.temperature}°C`;
+            document.getElementById('description').textContent = data.condition;
+            
+            const weatherIcon = document.getElementById('weather-icon');
+            weatherIcon.src = getWeatherIcon(data.condition);
+            weatherIcon.alt = data.condition;
+            
+            document.getElementById('feels-like').textContent = `${data.feelsLike}°C`;
+            document.getElementById('humidity').textContent = `${data.humidity}%`;
+            document.getElementById('wind').textContent = `${data.wind} м/с`;
+            document.getElementById('pressure').textContent = `${data.pressure} hPa`;
+            
+            // Обновление прогноза
+            const forecastContainer = document.getElementById('forecast-container');
+            forecastContainer.innerHTML = '';
+            
+            data.forecast.forEach(day => {
+                const forecastCard = document.createElement('div');
+                forecastCard.className = 'forecast-card';
+                
+                forecastCard.innerHTML = `
+                    <div class="forecast-day">${day.day}</div>
+                    <img src="${getWeatherIcon(day.condition)}" alt="${day.condition}" width="40">
+                    <div class="forecast-temp">${day.temp}°C</div>
+                `;
+                
+                forecastContainer.appendChild(forecastCard);
+            });
+        }
+        
+        // Основная функция инициализации
+        async function initWeatherApp() {
+            updateTime();
+            
+            // Показываем состояние загрузки
+            document.getElementById('description').textContent = 'Загрузка данных...';
+            
+            try {
+                const weatherData = await fetchWeatherData();
+                updateWeatherUI(weatherData);
+            } catch (error) {
+                console.error('Ошибка при получении данных о погоде:', error);
+                document.getElementById('description').textContent = 'Ошибка загрузки данных';
+            }
+        }
+        
+        // Запуск приложения при загрузке страницы
+        document.addEventListener('DOMContentLoaded', initWeatherApp);
+        
+        // Обновление данных каждые 15 минут
+        setInterval(initWeatherApp, 15 * 60 * 1000);
+        
+        // Обновление времени каждую секунду
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
+Особенн
